@@ -7,6 +7,10 @@ TagManager:
   - door1
   - key1
   - coin
+  - floor
+  - spring
+  - key2
+  - door2
   layers:
   - Default
   - TransparentFX

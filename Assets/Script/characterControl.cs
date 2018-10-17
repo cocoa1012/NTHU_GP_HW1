@@ -25,6 +25,8 @@ public class characterControl : MonoBehaviour {
     [Header("攝影機")]
     GameObject cam;
     float angle;
+    [Header("是否著地")]
+    private bool landing;
 
     // Use this for initialization
     void Start () {
@@ -35,7 +37,7 @@ public class characterControl : MonoBehaviour {
 
         speed = 10.0f;
         mouseSpeed = 5.0f;
-
+        landing = true;
     }
 	
 	// Update is called once per frame
@@ -57,7 +59,10 @@ public class characterControl : MonoBehaviour {
             transform.Translate(speed * Time.deltaTime, 0, 0);    
         }
         if (Input.GetKeyDown(KeyCode.Space)){
-            m_rigid.AddForce(new Vector3(0, 700, 0));
+            if (landing == true){
+                landing = false;
+                m_rigid.AddForce(new Vector3(0, 700, 0));
+            }
         }
 
         rX = Input.GetAxis("Mouse X");
@@ -79,6 +84,23 @@ public class characterControl : MonoBehaviour {
             GameObject door = GameObject.Find("Door1");
             door.GetComponent<Transform>().Translate(0, 10, 0);
             Destroy(collision.gameObject);
+        }
+        if (collision.gameObject.tag == ""){
+            print ("open!");
+            GameObject door = GameObject.Find("Door1");
+            door.GetComponent<Transform>().Translate(0, 10, 0);
+            Destroy(collision.gameObject);
+        }
+    }
+
+    void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.tag == "floor"){
+            landing = true;
+        }
+        if (other.gameObject.tag == "spring"){
+            landing = false;
+            m_rigid.AddForce(new Vector3(0, 1800, 0));
         }
     }
 
