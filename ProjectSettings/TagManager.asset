@@ -11,6 +11,8 @@ TagManager:
   - spring
   - key2
   - door2
+  - ball
+  - shield
   layers:
   - Default
   - TransparentFX

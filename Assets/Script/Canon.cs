@@ -7,8 +7,11 @@ public class Canon : MonoBehaviour {
 	public Object ball;
 	// Use this for initialization
 	public float delayTime;
+	private float alpha;
+	public float speed;
 	void Start () {
 		InvokeRepeating("shootBall", 2.0f, delayTime);
+		alpha = 0.0f;
 	}
 	
 	void shootBall(){
@@ -19,6 +22,7 @@ public class Canon : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		
+		// transform.position.y = Mathf.PingPong(alpha,10);
+		// alpha += speed;
 	}
 }
