@@ -9,12 +9,16 @@ public class Canon : MonoBehaviour {
 	public float delayTime;
 	private float alpha;
 	public float speed;
+
+	public AudioSource SE;
+	public AudioClip CANON;
 	void Start () {
 		InvokeRepeating("shootBall", 2.0f, delayTime);
 		alpha = 0.0f;
 	}
 	
 	void shootBall(){
+		SE.PlayOneShot(CANON);
 		GameObject Ball = GameObject.Instantiate(ball, Vector3.zero, Quaternion.identity) as GameObject;
 		Ball.transform.position = gameObject.transform.position + gameObject.transform.up * 0.5f;
 		Ball.GetComponent<Rigidbody>().AddForce(gameObject.transform.up * 4000);

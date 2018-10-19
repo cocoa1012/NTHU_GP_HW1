@@ -24,10 +24,7 @@ public class characterControl : MonoBehaviour {
     // float rY;
     float mouseSpeed;
 
-    // [Header("攝影機")]
-    // GameObject cam;
-    // GameObject pivot;
-    // float angle;
+    
     [Header("是否著地")]
     private bool landing;
     [Header("UI")]
@@ -37,15 +34,23 @@ public class characterControl : MonoBehaviour {
     private bool isProtected;
 
     public Canvas gameOver;
+    public Canvas ESC;
+    public Canvas FINISH;
+
+    public AudioClip GATE;
+    public AudioClip COIN;
+    public AudioClip SHIELD;
+    public AudioClip JUMP;
+    
+    AudioSource BGM;
 
     // Use this for initialization
     void Start () {
         m_anim = this.gameObject.GetComponent<Animator>();
         m_rigid = this.gameObject.GetComponent<Rigidbody>();
         initPos = this.gameObject.transform.position;
-        // cam = GameObject.Find("Main Camera");
-        // pivot = GameObject.Find("_root");
-        // print(pivot);
+        BGM = GameObject.Find("BGM").GetComponent<AudioSource>();
+        
 
         speed = 10.0f;
         mouseSpeed = 5.0f;
@@ -53,6 +58,7 @@ public class characterControl : MonoBehaviour {
         numOfCoins = 10;
         shield.enabled = false;
         isProtected = false;
+        FINISH.enabled = false;
     }
 	
 	// Update is called once per frame
@@ -75,31 +81,35 @@ public class characterControl : MonoBehaviour {
         }
         if (Input.GetKeyDown(KeyCode.Space)){
             if (landing == true){
+                BGM.PlayOneShot(JUMP);
                 landing = false;
                 m_anim.SetBool("isJump", true);
                 m_rigid.AddForce(new Vector3(0, 700, 0));
             }
         }
+        if (Input.GetKeyDown(KeyCode.Escape)){
+            Cursor.visible = true;
+            ESC.enabled = true;
+            Time.timeScale = 0;
+        }
 
         rX = Input.GetAxis("Mouse X");
-        // rY = Input.GetAxis("Mouse Y");
+        
 		transform.Rotate(0.0f, mouseSpeed * rX, 0.0f);
-        // angle = cam.transform.eulerAngles.x + (-rY * mouseSpeed);
-        // if (!(angle > 35 && angle < 325)){
-        //     print(angle);
-        //     cam.transform.RotateAround(pivot.transform.position, cam.transform.right, mouseSpeed * -rY);
-        // }
+        
 	}
 
 	private void OnTriggerEnter(Collider collision)
     {
         if (collision.gameObject.tag == "coin"){
+            BGM.PlayOneShot(COIN);
             print ("get coin!");
             Destroy(collision.gameObject);
             numOfCoins -= 1;
             coinText.text = "Coins Remaining: " + numOfCoins;
         }
         if (collision.gameObject.tag == "shield"){
+            BGM.PlayOneShot(SHIELD);
             shield.enabled = true;
             isProtected = true;
             Canvas Info = GameObject.Find("shieldInfo").GetComponent<Canvas>();
@@ -108,12 +118,14 @@ public class characterControl : MonoBehaviour {
             Destroy(collision.gameObject);
         }
         if (collision.gameObject.tag == "key1"){
+            BGM.PlayOneShot(GATE);
             print ("open door1!");
             GameObject door = GameObject.Find("door1");
             door.GetComponent<Transform>().Translate(0, 10, 0);
             Destroy(collision.gameObject);
         }
         if (collision.gameObject.tag == "key2"){
+            BGM.PlayOneShot(GATE);
             print ("open door2!");
             GameObject door = GameObject.Find("door2");
             door.GetComponent<Transform>().Translate(0, 10, 0);
@@ -128,6 +140,7 @@ public class characterControl : MonoBehaviour {
             m_anim.SetBool("isJump", false);
         }
         if (other.gameObject.tag == "spring"){
+            BGM.PlayOneShot(JUMP);
             landing = false;
             m_anim.SetBool("isJump", true);
             m_rigid.AddForce(new Vector3(0, 1800, 0));
@@ -141,6 +154,17 @@ public class characterControl : MonoBehaviour {
                 gameOver.enabled = true;
                 Cursor.visible = true;
                 Time.timeScale = 0;
+            }
+        }
+        if (other.gameObject.tag == "exitWall"){
+            if (numOfCoins == 0){
+                GameObject.Destroy(other.gameObject);
+            }
+        }
+        if (other.gameObject.tag == "exit"){
+            if (numOfCoins == 0){
+                Cursor.visible = true;
+                FINISH.enabled = true;
             }
         }
     }
